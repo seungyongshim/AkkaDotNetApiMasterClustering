@@ -61,6 +61,8 @@ akka {
 	  verbose-receive-gossip-logging = on
     }
 
+    roles = [work]
+
     seed-nodes = [
     ""akka.tcp://ClusterSystem@192.168.100.76:4053"",
     ""akka.tcp://ClusterSystem@192.168.100.76:4054""

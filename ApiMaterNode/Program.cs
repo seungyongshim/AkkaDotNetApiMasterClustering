@@ -1,6 +1,7 @@
 ﻿using System;
 using Akka;
 using Akka.Actor;
+using Akka.Cluster.Tools.Singleton;
 using Akka.Configuration;
 using Petabridge.Cmd.Cluster;
 using Petabridge.Cmd.Host;
@@ -39,6 +40,29 @@ akka {
       event-stream = on    # Default off
       unhandled = on       # Default off
     }
+
+    deployment 
+    {
+		/ApiMasterActor 
+		{
+		
+		}
+
+        ""/ApiMasterActor/WorkerActor""
+        {
+          
+		  router = round-robin-pool # routing strategy
+		  nr-of-instances = 100 # max number of total routees
+		  
+		  cluster # Cluster 안에 node 당 최대 instances 개수 정의
+          {
+		  	enabled = on
+            max-nr-of-instances-per-node = 2
+            allow-local-routees = off
+            use-role = work
+          }
+        }
+    }
   }
 
   remote {
@@ -54,7 +78,10 @@ akka {
   }
 
   cluster {
+
+    roles = [api]
     log-info = on
+    allow-weakly-up-members = on
 
     debug {
       verbose-heartbeat-logging = on

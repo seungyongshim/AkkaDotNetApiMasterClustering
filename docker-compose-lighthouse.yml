@@ -1,0 +1,37 @@
+version: "3"
+services:
+  lighthouse1:
+    image: petabridge/lighthouse:latest
+    container_name: lighthouse1
+    restart: always
+    hostname: lighthouse1
+    environment:
+      ACTORSYSTEM: "ClusterSystem"
+      CLUSTER_SEEDS: "akka.tcp://ClusterSystem@192.168.100.76:4053"
+      CLUSTER_IP : "192.168.100.76"
+      CLUSTER_PORT: 4053
+    ports:
+      - "4053:4053"
+      - "9110:9110"
+    networks:
+      - network
+
+  lighthouse2:
+    image: petabridge/lighthouse:latest
+    container_name: lighthouse2
+    restart: always
+    hostname: lighthouse2
+    environment:
+      ACTORSYSTEM: "ClusterSystem"
+      CLUSTER_SEEDS: "akka.tcp://ClusterSystem@192.168.100.76:4054"
+      CLUSTER_IP : "192.168.100.76"
+      CLUSTER_PORT: 4054
+    ports:
+      - "4054:4054"
+      - "0:9110"
+    networks:
+      - network
+ 
+networks:
+  network:
+    driver: bridge

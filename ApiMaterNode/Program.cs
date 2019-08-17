@@ -48,7 +48,7 @@ akka {
 		
 		}
 
-        ""/ApiMasterActor/WorkerActor""
+        /WorkerActor
         {
           
 		  router = round-robin-pool # routing strategy

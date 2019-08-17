@@ -16,13 +16,6 @@ namespace ApiMaterNode
 
         public ApiMasterActor()
         {
-            if (Context.Child(nameof(WorkerActor)).Equals(ActorRefs.Nobody))
-            {
-                Worker = Context.ActorOf(WorkerActor.Props(), nameof(WorkerActor));
-            }
-            else
-                Worker = Context.Child(nameof(WorkerActor));
-
             Receive<Int64>(msg => Console.WriteLine(msg));
         }
 
@@ -34,6 +27,7 @@ namespace ApiMaterNode
 
         protected override void PreStart()
         {
+            Worker = Context.System.ActorOf(WorkerActor.Props(), nameof(WorkerActor));
             Context.System.Scheduler.ScheduleTellRepeatedly(TimeSpan.FromSeconds(0), TimeSpan.FromSeconds(1), Worker, "Hello", Self);
             base.PreStart();
         }

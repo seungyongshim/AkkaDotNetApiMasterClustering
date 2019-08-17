@@ -9,8 +9,6 @@ namespace ApiMaterNode
     {
         public IActorRef Worker{ get; private set; }
 
-        public Int64 Index { get; set; } = 0;
-
         public static Props Props(Config config)
         {
             return Akka.Actor.Props.Create(() => new ApiMasterActor());
@@ -18,8 +16,14 @@ namespace ApiMaterNode
 
         public ApiMasterActor()
         {
-            Worker = Context.ActorOf(WorkerActor.Props(), nameof(WorkerActor));
-            Context.System.Scheduler.ScheduleTellRepeatedly(TimeSpan.FromSeconds(0), TimeSpan.FromSeconds(1), Worker, Index++, Self);
+            if (Context.Child(nameof(WorkerActor)).Equals(ActorRefs.Nobody))
+            {
+                Worker = Context.ActorOf(WorkerActor.Props(), nameof(WorkerActor));
+            }
+            else
+                Worker = Context.Child(nameof(WorkerActor));
+
+            Receive<Int64>(msg => Console.WriteLine(msg));
         }
 
         protected override void PreRestart(Exception reason, object message)
@@ -30,6 +34,7 @@ namespace ApiMaterNode
 
         protected override void PreStart()
         {
+            Context.System.Scheduler.ScheduleTellRepeatedly(TimeSpan.FromSeconds(0), TimeSpan.FromSeconds(1), Worker, "Hello", Self);
             base.PreStart();
         }
     }
